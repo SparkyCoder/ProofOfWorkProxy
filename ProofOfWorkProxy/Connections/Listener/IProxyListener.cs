@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ProofOfWorkProxy.Connections
+namespace ProofOfWorkProxy.Connections.Listener
 {
     public interface IProxyListener
     {

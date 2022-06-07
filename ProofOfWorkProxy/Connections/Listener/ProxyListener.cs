@@ -2,23 +2,25 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Threading.Tasks;
 using ProofOfWorkProxy.DataTransfer;
 using ProofOfWorkProxy.Decorators;
 using ProofOfWorkProxy.Extensions;
+using ProofOfWorkProxy.Managers;
 using ProofOfWorkProxy.Models;
 
-namespace ProofOfWorkProxy.Connections
+namespace ProofOfWorkProxy.Connections.Listener
 {
     public class ProxyListener : IProxyListener
     {
         private readonly IDataTransfer<MinerToPoolTransfer> minerToPoolTransfer;
         private readonly IDataTransfer<PoolToMinerTransfer> poolToMinerTransfer;
+        private readonly IMessageManager messageManager;
 
-        public ProxyListener(IDataTransfer<MinerToPoolTransfer> minerToPoolTransfer, IDataTransfer<PoolToMinerTransfer> poolToMinerTransfer)
+        public ProxyListener(IDataTransfer<MinerToPoolTransfer> minerToPoolTransfer, IDataTransfer<PoolToMinerTransfer> poolToMinerTransfer, IMessageManager messageManager)
         {
             this.minerToPoolTransfer = minerToPoolTransfer;
             this.poolToMinerTransfer = poolToMinerTransfer;
+            this.messageManager = messageManager;
         }
 
         public void Listen(Func<IConnection, string> welcomeMessage)
@@ -47,24 +49,26 @@ namespace ProofOfWorkProxy.Connections
         {
             while (!Environment.HasShutdownStarted)
             {
-                $"Waiting for new mining connections on {proxyListener.LocalEndpoint.ToString()}...".Display(ConsoleColor.White);
+                var waitingForConnectionsMessage = new ConsoleMessage($"Waiting for new mining connections on {proxyListener.LocalEndpoint}...", ConsoleColor.White);
+                messageManager.AddMessage(waitingForConnectionsMessage);
 
                 var minerClient = proxyListener.AcceptTcpClient();
 
                 var minerConnection = GetDecoratedConnection(new MinerConnection(minerClient));
                 var poolConnection = GetDecoratedConnection(new MinerPoolConnection());
 
-                welcomeMessage(minerConnection).Display(ConsoleColor.DarkMagenta);
+                var newMinerMessage = new ConsoleMessage(welcomeMessage(minerConnection), ConsoleColor.DarkMagenta);
+                messageManager.AddMessage(newMinerMessage);
 
                 QueueWork(() => minerToPoolTransfer.SendData(minerConnection, poolConnection));
                 QueueWork(() => poolToMinerTransfer.SendData(minerConnection, poolConnection));
             }
         }
 
-        private static IConnection GetDecoratedConnection(IConnection connection)
+        private IConnection GetDecoratedConnection(IConnection connection)
         {
             connection = connection.Initialize();
-            return new ConnectionDecorator(connection);
+            return new ConnectionDecorator(connection, messageManager);
         }
 
         private static void QueueWork(Action onNewMinerConnected)

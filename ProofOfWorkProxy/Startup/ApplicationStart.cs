@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ProofOfWorkProxy.Connections;
+using ProofOfWorkProxy.Connections.Listener;
 using ProofOfWorkProxy.DataTransfer;
+using ProofOfWorkProxy.Managers;
 using ProofOfWorkProxy.Proxy;
 
 namespace ProofOfWorkProxy.Startup
@@ -12,6 +13,7 @@ namespace ProofOfWorkProxy.Startup
             var serviceCollection = new ServiceCollection()
                 .AddTransient<IProxy, Proxy.Proxy>()
                 .AddTransient<IProxyListener, ProxyListener>()
+                .AddSingleton<IMessageManager, MessageManager>()
                 .AddTransient<IDataTransfer<PoolToMinerTransfer>, PoolToMinerTransfer>()
                 .AddTransient<IDataTransfer<MinerToPoolTransfer>, MinerToPoolTransfer>()
                 .BuildServiceProvider();

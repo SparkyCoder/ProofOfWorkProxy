@@ -1,11 +1,29 @@
 ﻿using System;
 using ProofOfWorkProxy.Connections;
+using ProofOfWorkProxy.Managers;
+using ProofOfWorkProxy.Models;
 
 namespace ProofOfWorkProxy.DataTransfer
 {
     public abstract class DataTransferBase<T> : IDataTransfer<T>
     {
-        public bool ConnectionsAreValid(IConnection miner, IConnection pool)
+        private readonly IMessageManager messageManager;
+
+        protected DataTransferBase(IMessageManager messageManager)
+        {
+            this.messageManager = messageManager;
+        }
+
+        protected void DisplayTransfer(string sentData, string minerId, string direction)
+        {
+            var dataTransferMessage = new ConsoleMessage($"{minerId} {direction}", ConsoleColor.Green);
+            messageManager.AddMessage(dataTransferMessage);
+
+            var stratumJsonMessage = new ConsoleMessage(sentData, ConsoleColor.White);
+            messageManager.AddMessage(stratumJsonMessage);
+        }
+
+        protected bool ConnectionsAreValid(IConnection miner, IConnection pool)
         {
             return !miner.IsTerminated && !pool.IsTerminated;
         }

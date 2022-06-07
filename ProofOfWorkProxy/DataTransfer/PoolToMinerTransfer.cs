@@ -1,11 +1,15 @@
 ﻿using System;
 using ProofOfWorkProxy.Connections;
 using ProofOfWorkProxy.Extensions;
+using ProofOfWorkProxy.Managers;
+using ProofOfWorkProxy.Models;
 
 namespace ProofOfWorkProxy.DataTransfer
 {
     public class PoolToMinerTransfer : DataTransferBase<PoolToMinerTransfer>
     {
+        public PoolToMinerTransfer(IMessageManager messageManager) : base(messageManager) { }
+
         public override void SendData(IConnection minerConnection, IConnection poolConnection)
         {
             while (ConnectionsAreValid(minerConnection, poolConnection))
@@ -16,11 +20,14 @@ namespace ProofOfWorkProxy.DataTransfer
 
                 if(string.IsNullOrEmpty(stratumResponse)) continue;
 
-                minerConnection.Write(stratumResponse);
+                DisplayTransfer(stratumResponse, minerConnection.Id, "Miner <--------------- Pool");
 
-                $" {minerConnection.Id} Miner <--------------- Pool".Display(ConsoleColor.Green);
-                stratumResponse.Display(ConsoleColor.White);
+                minerConnection.Write(stratumResponse);
             }
         }
+
+
+
+        
     }
 }
