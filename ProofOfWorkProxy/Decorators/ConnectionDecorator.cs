@@ -26,6 +26,11 @@ namespace ProofOfWorkProxy.Decorators
             return wrappedConnection.Initialize();
         }
 
+        public void CheckIfConnectionIsAlive()
+        {
+            wrappedConnection.CheckIfConnectionIsAlive();
+        }
+
         public void Write(string stratumJson)
         {
             try
@@ -53,11 +58,10 @@ namespace ProofOfWorkProxy.Decorators
 
         public void Dispose()
         {
-            var className = wrappedConnection.GetType().ToString().GetClassName();
-
-            $"{className} {Id} Terminated!".Display(ConsoleColor.Red);
-
             if(wrappedConnection.IsTerminated) return;
+
+            var className = wrappedConnection.GetType().ToString().GetClassName();
+            $"{className} {Id} Terminated!".Display(ConsoleColor.Red);
 
             wrappedConnection.IsTerminated = true;
             IsTerminated = true;

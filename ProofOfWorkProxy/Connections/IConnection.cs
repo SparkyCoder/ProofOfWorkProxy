@@ -9,5 +9,6 @@ namespace ProofOfWorkProxy.Connections
         void Write(string stratumJson);
         string Read();
         IConnection Initialize();
+        void CheckIfConnectionIsAlive();
     }
 }

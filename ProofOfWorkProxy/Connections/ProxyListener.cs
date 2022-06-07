@@ -47,7 +47,7 @@ namespace ProofOfWorkProxy.Connections
         {
             while (!Environment.HasShutdownStarted)
             {
-                "Waiting for new mining connections...".Display(ConsoleColor.White);
+                $"Waiting for new mining connections on {proxyListener.LocalEndpoint.ToString()}...".Display(ConsoleColor.White);
 
                 var minerClient = proxyListener.AcceptTcpClient();
 
@@ -56,11 +56,8 @@ namespace ProofOfWorkProxy.Connections
 
                 welcomeMessage(minerConnection).Display(ConsoleColor.DarkMagenta);
 
-                //QueueWork(() => minerToPoolTransfer.SendData(minerConnection, poolConnection));
-                //QueueWork(() => poolToMinerTransfer.SendData(minerConnection, poolConnection));
-
-                new Task(() => minerToPoolTransfer.SendData(minerConnection, poolConnection)).Start();
-                new Task(() => poolToMinerTransfer.SendData(minerConnection, poolConnection)).Start();
+                QueueWork(() => minerToPoolTransfer.SendData(minerConnection, poolConnection));
+                QueueWork(() => poolToMinerTransfer.SendData(minerConnection, poolConnection));
             }
         }
 

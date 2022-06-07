@@ -10,6 +10,8 @@ namespace ProofOfWorkProxy.DataTransfer
         {
             while (ConnectionsAreValid(minerConnection, poolConnection))
             {
+                minerConnection.CheckIfConnectionIsAlive();
+
                 var stratumResponse = poolConnection.Read();
 
                 if(string.IsNullOrEmpty(stratumResponse)) continue;

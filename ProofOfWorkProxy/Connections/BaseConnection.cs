@@ -24,6 +24,12 @@ namespace ProofOfWorkProxy.Connections
             return this;
         }
 
+        public void CheckIfConnectionIsAlive()
+        {
+            var ping = Encoding.ASCII.GetBytes(" ");
+            networkStream.Write(ping);
+        }
+
         protected virtual TcpClient GetClient()
         {
             throw new NotImplementedException();
