@@ -5,18 +5,19 @@ namespace ProofOfWorkProxy.Models
 {
     public class ConsoleMessage
     {
-        private ConsoleColor Color { get; }
-        private string Message { get; }
+        private ConsoleColor color { get; }
+        private string message { get; }
 
-        public ConsoleMessage(string message, ConsoleColor color)
+
+        public ConsoleMessage(string message, ConsoleColor color = ConsoleColor.Magenta)
         {
-            Color = color;
-            Message = message;
+            this.color = color;
+            this.message = message;
         }
 
         public void DisplayMessage()
         {
-            Message.Display(Color);
+            message.Display(color);
         }
     }
 }

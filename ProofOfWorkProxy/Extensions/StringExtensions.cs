@@ -10,6 +10,11 @@ namespace ProofOfWorkProxy.Extensions
             return Convert.ToInt32(configurationValue);
         }
 
+        public static bool ToBool(this string configurationValue)
+        {
+            return Convert.ToBoolean(configurationValue);
+        }
+
         public static void Display(this string message, ConsoleColor color)
         {
             Console.ForegroundColor = color;

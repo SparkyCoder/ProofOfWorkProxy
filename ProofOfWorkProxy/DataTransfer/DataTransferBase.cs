@@ -16,6 +16,8 @@ namespace ProofOfWorkProxy.DataTransfer
 
         protected void DisplayTransfer(string sentData, string minerId, string direction)
         {
+            if (!Settings.DebugOn) return;
+
             var dataTransferMessage = new ConsoleMessage($"{minerId} {direction}", ConsoleColor.Green);
             messageManager.AddMessage(dataTransferMessage);
 
@@ -25,6 +27,8 @@ namespace ProofOfWorkProxy.DataTransfer
 
         protected bool ConnectionsAreValid(IConnection miner, IConnection pool)
         {
+            miner.CheckIfConnectionIsAlive();
+            pool.CheckIfConnectionIsAlive();
             return !miner.IsTerminated && !pool.IsTerminated;
         }
         public virtual void SendData(IConnection minerConnection, IConnection poolConnection)

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using System.Linq;
+using Newtonsoft.Json;
 using ProofOfWorkProxy.Connections;
-using ProofOfWorkProxy.Extensions;
 using ProofOfWorkProxy.Managers;
 using ProofOfWorkProxy.Models;
 
@@ -8,7 +8,11 @@ namespace ProofOfWorkProxy.DataTransfer
 {
     public class MinerToPoolTransfer : DataTransferBase<MinerToPoolTransfer>
     {
-        public MinerToPoolTransfer(IMessageManager messageManager) : base(messageManager) { }
+        private readonly IStatisticsManager statisticsManager;
+        public MinerToPoolTransfer(IMessageManager messageManager, IStatisticsManager statisticsManager) : base(messageManager)
+        {
+            this.statisticsManager = statisticsManager;
+        }
 
         public override void SendData(IConnection minerConnection, IConnection poolConnection)
         {
@@ -18,10 +22,42 @@ namespace ProofOfWorkProxy.DataTransfer
 
                 if (string.IsNullOrEmpty(stratumRequest)) continue;
 
+                UpdateStatistics(minerConnection.Id, stratumRequest);
+
                 DisplayTransfer(stratumRequest, minerConnection.Id, "Miner ---------------> Pool");
 
                 poolConnection.Write(stratumRequest);
             }
+        }
+
+        private void UpdateStatistics(string minerId, string minerStratumRequest)
+        {
+            var jsonRpc = JsonConvert.DeserializeObject<JsonRpcRequest>(minerStratumRequest);
+
+            if (jsonRpc == null || jsonRpc.Method == null) return;
+
+            var statisticsToUpdate = statisticsManager.GetCurrentStatistics(minerId);
+
+            if (statisticsToUpdate == null) return;
+
+            UpdateValues(statisticsToUpdate, jsonRpc);
+            
+            statisticsManager.AddOrUpdateStatistics(minerId, statisticsToUpdate);
+        }
+
+        private static void UpdateValues(Statistics statisticsToUpdate, JsonRpcRequest jsonRpc)
+        {
+            statisticsToUpdate.MinerMadeRequestToPool();
+
+            var methodName = jsonRpc.Method as string;
+
+            if (IsMethodAShareSubmittedRequest(methodName))
+                statisticsToUpdate.ShareWasSubmittedToPool();
+        }
+
+        private static bool IsMethodAShareSubmittedRequest(string methodName)
+        {
+            return MethodTypes.Submit.Any(method => methodName.ToUpper().Contains(method));
         }
     }
 }
