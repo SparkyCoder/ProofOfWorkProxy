@@ -41,7 +41,7 @@
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#step-1-configure-your-proxy-settings">Step 1 (Configure your Proxy Settings)</a></li>
-        <a href="#step-2-configure-your-miner-settings">Step 2 (Configure your Miner Settings)</a></li>
+        <a href="#step-2-update-your-miner-settings">Step 2 (Update your Miner Settings)</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li> 
@@ -125,7 +125,7 @@ the you'll want to update your App.config to look like this:
 
 First step done!
 
-### Step 2 (Configure your Miner Settings)
+### Step 2 (Update your Miner Settings)
 
 For this step we'll want to update your miner with the IP and Port of your new proxy. 
 
@@ -138,7 +138,7 @@ stratum2+ssl://eu.crazypool.org:3333 -u userName -p passwordHere
 We'll want to update it to:
 
 ```
-stratum2+ssl://YourIpAddressHere:6673 -u userName -p passwordHere
+stratum2+ssl://YourProxyIpAddressHere:6673 -u userName -p passwordHere
 ```
 
 Not sure how to find your IP address?
@@ -165,7 +165,7 @@ stratum2+ssl://127.0.0.1:6673 -u userName -p passwordHere
 Make sure your PoW Proxy application is running and says ```Waiting for connections......``` <br>
 Start your miner and you'll see the statistics start displaying. 
 
-If you want to see troubleshoot and see more verbose messages you can use the debug mode. That setting is in the same file you updated earlier, the [App.Config](https://raw.githubusercontent.com/SparkyCoder/ProofOfWorkProxy/main/ProofOfWorkProxy/App.config). 
+If you want to troubleshoot your miner or proxy and see more verbose messages, you can use the debug flag. That setting is in the same file you updated earlier, the [App.Config](https://raw.githubusercontent.com/SparkyCoder/ProofOfWorkProxy/main/ProofOfWorkProxy/App.config). 
 
 This time however, you'll want to update the `DebugOn` flag from `false` to `true`. 
 

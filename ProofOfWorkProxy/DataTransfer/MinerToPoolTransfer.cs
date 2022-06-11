@@ -28,6 +28,9 @@ namespace ProofOfWorkProxy.DataTransfer
 
                 poolConnection.Write(stratumRequest);
             }
+
+            minerConnection.Dispose();
+            poolConnection.Dispose();
         }
 
         private void UpdateStatistics(string minerId, string minerStratumRequest)

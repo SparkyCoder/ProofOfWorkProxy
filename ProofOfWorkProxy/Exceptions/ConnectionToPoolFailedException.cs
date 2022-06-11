@@ -8,8 +8,9 @@ namespace ProofOfWorkProxy.Exceptions
             @"Error: Can't connect to mining pool. 
 
 Fixes: 
-   1) Verify pool is operational. 
-   2) Check your 'MiningPoolDomain' and 'MiningPoolPort' settings in the App.Config file.")
+   1) Check your internet connection. 
+   2) Check your 'MiningPoolDomain' and 'MiningPoolPort' settings in the App.Config file.
+   3) Verify your pool is not down for maintenance.")
         {
 
         }
