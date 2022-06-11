@@ -40,9 +40,12 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#step-1-configure-your-proxy-settings">Step 1 (Configure your Proxy Settings)</a></li>
+        <a href="#step-2-configure-your-miner-settings">Step 2 (Configure your Miner Settings)</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
+    <li><a href="#usage">Usage</a></li> 
+    <li><a href="#troubleshooting">Troubleshooting</a></li> 
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -56,17 +59,19 @@
 
 [![PoW Proxy][product-screenshot]](https://github.com/SparkyCoder/ProofOfWorkProxy)
 
-The PoW Proxy is a practical way to monitor your miners. 
+Introducing PoW Proxy, from the developer that brought you [MyAdaRewards.com](https://www.myadarewards.com/) and the [MyAdaRewards Chrome Extension](https://chrome.google.com/webstore/detail/my-ada-rewards/ohgbmofhglhmjpjeconlmlkekoajlabb).
+
+The PoW Proxy is a practical way to monitor and gather statistics on your miners. 
 
 Do you:
-* Want to see realtime connections of your miners?
-* (coming soon) Want to be notified when a miner gets disconnected?
-* Want to see realtime data transfer statistics between your miners and pool?
-* Perhaps you want to debug your miner and view the raw Json-RPC communications?
+* Want to see realtime connections of all your miners in one spot?
+* Want to be notified when a miner is down or disconnected?
+* Want to see realtime statistics of your miner and pool communications?
+* Perhaps you want to troubleshoot your miner and view the raw Json-RPC communications?
 
-Then this simple console application will help you. 
+Then this simple console application is for you. 
 
-Unlike other proxy applications, PoW Proxy has no dev fees nor will it ever add any. The proxy will stay completely free and open source.
+Unlike other proxy applications, PoW Proxy promises no dev fees will ever be added. This proxy will stay completely free and open source.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -74,9 +79,9 @@ Unlike other proxy applications, PoW Proxy has no dev fees nor will it ever add 
 
 ## Technical Details
 
-The application was build with speed at the forefront of it's developement. Each miner will be given two threads. One for miner to pool communication and another for pool to miner data transfer. This will create minimal latency and ensure your submitted shares don't become stale. 
+PoW Proxy was build with speed at the forefront of it's developement. Each miner will be given two processing threads. One for miner ---> pool communication and another for pool ---> miner data transfer. This will create minimal latency and ensure your submitted shares don't become stale. 
 
-The PoW Proxy supports Stratum protocols V1 and V2, but does not support SSL connections at this time. 
+The PoW Proxy supports Stratum protocols V1 and V2, but does not support SSL connections at this time.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -87,25 +92,68 @@ The PoW Proxy supports Stratum protocols V1 and V2, but does not support SSL con
 
 There are three ways to start using PoW Proxy
 * With a GPU miner on the same computer (easiest)
-* With ASICs on your Local Area Network (moderate difficulty)
+* With a GPU or ASIC on your Local Area Network (moderate difficulty)
 * Over the internet on a static IP or domain (most difficult)
 
 ### Prerequisites
 
-First, identify the IP address of your proxy. 
-* Tip: if you're using a GPU miner on the same machine the IP address you're looking for is ```127.0.0.1```
-* If you're using ASICs on the same network then you'll want to open a command prompt (Windows + R and type 'cmd') and enter the following
-  ```sh
+Let's get your configuration working first. There are only two steps!
+
+### Step 1 (Configure your Proxy Settings)
+
+Navigate to the `App.config` file in the PoW PRoxy directory. Now edit the file in a text editor. You should see [something like this](https://raw.githubusercontent.com/SparkyCoder/ProofOfWorkProxy/main/ProofOfWorkProxy/App.config). 
+
+Update the values in `MiningPoolDomain` and `MiningPoolPort` to match your pool. 
+
+For example, if your miner settings currently look like this: 
+```
+stratum2+ssl://eu.crazypool.org:3333 -u userName -p passwordHere
+```
+the you'll want to update your App.config to look like this:
+
+```
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <appSettings>
+    <add key="ProxyPort" value="6673"/>
+    <add key="MiningPoolDomain" value="eu.crazypool.org"/> 
+    <add key="MiningPoolPort" value="3333"/> 
+    <add key="DebugOn" value="false"/>
+  </appSettings>
+</configuration>
+```
+
+First step done!
+
+### Step 2 (Configure your Miner Settings)
+
+For this step we'll want to update your miner with the IP and Port of your new proxy. 
+
+For example, if your miner looked like this:
+
+```
+stratum2+ssl://eu.crazypool.org:3333 -u userName -p passwordHere
+```
+
+We'll want to update it to:
+
+```
+stratum2+ssl://YourIpAddressHere:6673 -u userName -p passwordHere
+```
+
+Not sure how to find your IP address?
+
+* Tip: if you're using a GPU miner on the same machine the IP address you're looking for is `127.0.0.1`
+```
+stratum2+ssl://127.0.0.1:6673 -u userName -p passwordHere
+```
+* If you're using a GPU or ASIC on the same network (LAN) then you'll want to open a command prompt (Windows + R and type 'cmd') and enter the following
+  ```
   ipconfig
   ```
-  you'll want to take note of your ```IPv4 Address```. It will look something like 192.168.1.xxx. 
+  you'll want to take note of your `IPv4 Address`. It will look something like 192.168.1.xxx. 
 
-  Once you have this information, open up your miner's configuration and replace your mining pool address with the proxy IP.  
-
-  For example:
-  Replace ```stratum2+ssl://eu.crazypool.org:3333``` with ```stratum2+ssl://127.0.0.1:6673```
-
-  As you can see above the default port number is 6673. However, if you want to change this, you can locate a file called ```App.config``` under the ```\ProofOfWorkProxy``` folder and update the ```ProxyPort``` value accoordingly.
+  Once you have this IP, update your miner settings as shown above.
 
   All done! You should be ready to go.
 
@@ -117,16 +165,43 @@ First, identify the IP address of your proxy.
 Make sure your PoW Proxy application is running and says ```Waiting for connections......``` <br>
 Start your miner and you'll see the statistics start displaying. 
 
+If you want to see troubleshoot and see more verbose messages you can use the debug mode. That setting is in the same file you updated earlier, the [App.Config](https://raw.githubusercontent.com/SparkyCoder/ProofOfWorkProxy/main/ProofOfWorkProxy/App.config). 
+
+This time however, you'll want to update the `DebugOn` flag from `false` to `true`. 
+
+```
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <appSettings>
+    <add key="ProxyPort" value="6673"/>
+    <add key="MiningPoolDomain" value="eu.crazypool.org"/>
+    <add key="MiningPoolPort" value="3333"/>
+    <add key="DebugOn" value="true"/> 
+  </appSettings>
+</configuration>
+```
+
+Now you'll start see raw Json-RPC messages flow through. 
+
+[![Debug PoW Proxy][debug-screenshot]](https://github.com/SparkyCoder/ProofOfWorkProxy)
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+## Troubleshooting
 
+<b>Issue</b>: Screen is black with no information. <br/>
+<b>Reason</b>: It's possible you held the scroll bar or put focus on the console display with your cursor. <br/>
+<b>Fix</b>: Click on the PoW Proxy console application and hit `Enter` on your keyboard. Messages should continue. 
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [x] Add concurrent connections
+- [x] Add multi-threaded TCP Socket connections
 - [x] Support debug mode and statistics overview mode
 - [ ] Add notifications for disconnected miners
+- [ ] Add additional statistics (verified shares, error details, etc...)
 - [ ] Support SSL connections
 
 See the [open issues](https://github.com/SparkyCoder/ProofOfWorkProxy/issues) for a full list of proposed features (and known issues).
@@ -160,3 +235,4 @@ Project Link: [https://github.com/SparkyCoder/ProofOfWorkProxy](https://github.c
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]:https://www.linkedin.com/in/david-kobuszewski-60315428/
 [product-screenshot]: https://raw.githubusercontent.com/SparkyCoder/ProofOfWorkProxy/main/Images/screenshot.png
+[debug-screenshot]: https://raw.githubusercontent.com/SparkyCoder/ProofOfWorkProxy/main/Images/DebugScreenshot.png
