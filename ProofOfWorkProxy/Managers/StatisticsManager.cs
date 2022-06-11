@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using ProofOfWorkProxy.Exceptions;
 using ProofOfWorkProxy.Models;
 
 namespace ProofOfWorkProxy.Managers
@@ -18,8 +19,8 @@ namespace ProofOfWorkProxy.Managers
         {
             var addSucceeded = MinerStatistics.TryAdd(minerId, new Statistics());
 
-            if(!addSucceeded)
-                throw new Exception("Adding Statistics For New Miner Failed!");
+            if (!addSucceeded)
+                throw new CouldNotTakeActionOnCollectionException("TryAdd", "Statistics");
         }
 
         public Statistics GetCurrentStatistics(string minerId)
@@ -29,7 +30,7 @@ namespace ProofOfWorkProxy.Managers
             var getSucceeded = MinerStatistics.TryGetValue(minerId, out var existingStatistics);
 
             if (!getSucceeded)
-                throw new Exception("Updating Statistics Failed!");
+                throw new CouldNotTakeActionOnCollectionException("TryGetValue", "Statistics");
 
             return existingStatistics;
         }
@@ -43,7 +44,7 @@ namespace ProofOfWorkProxy.Managers
             var updateSucceeded = MinerStatistics.TryUpdate(minerId, updateStatistics, currentStatistics);
 
             if (!updateSucceeded)
-                throw new Exception("Updating Statistics Failed!");
+                throw new CouldNotTakeActionOnCollectionException("TryUpdate", "Statistics");
         }
 
         public void RemoveMinerStatistics(string minerId)
@@ -53,7 +54,7 @@ namespace ProofOfWorkProxy.Managers
             var removalSucceeded = MinerStatistics.TryRemove(minerId, out _);
 
             if (!removalSucceeded)
-                throw new Exception($"Could not remove statistics for  miner {minerId}.");
+                throw new CouldNotTakeActionOnCollectionException("TryRemove", $"{minerId} Statistics");
         }
 
         private bool DoesStatisticExist(string minerId)

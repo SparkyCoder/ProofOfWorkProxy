@@ -77,8 +77,7 @@ namespace ProofOfWorkProxy.Connections.Listener
 
         private IConnection GetDecoratedConnection(IConnection connection)
         {
-            connection = connection.Initialize();
-            return new ConnectionDecorator(connection, messageManager, statisticsManager);
+            return new ConnectionDecorator(connection, messageManager, statisticsManager).Initialize();
         }
 
         private static void QueueWork(Action onNewMinerConnected)

@@ -12,12 +12,30 @@ namespace ProofOfWorkProxy.Startup
         public static IProxy InitializeProxy()
         {
             var serviceCollection = new ServiceCollection()
-                .AddTransient<IProxy, Proxy.Proxy>()
+                .AddSingleton<IMessageManager, MessageManager>()
                 .AddTransient<IProxyListener, ProxyListener>()
                 .AddSingleton<IStatisticsManager>(provider => new StatisticsManagerRetryDecorator(new StatisticsManager()))
-                .AddSingleton<IMessageManager, MessageManager>()
-                .AddTransient<IDataTransfer<PoolToMinerTransfer>, PoolToMinerTransfer>()
-                .AddTransient<IDataTransfer<MinerToPoolTransfer>, MinerToPoolTransfer>()
+                .AddTransient<IDataTransfer<PoolToMinerTransfer>>(provider =>
+                {
+                    var messageManager = provider.GetService<IMessageManager>();
+                    var statisticsManager = provider.GetService<IStatisticsManager>();
+                    return new DataTransferExceptionDecorator<PoolToMinerTransfer>(messageManager,
+                        new PoolToMinerTransfer(messageManager, statisticsManager));
+                })
+                .AddTransient<IDataTransfer<MinerToPoolTransfer>>(provider =>
+                {
+                    var messageManager = provider.GetService<IMessageManager>();
+                    var statisticsManager = provider.GetService<IStatisticsManager>();
+                    return new DataTransferExceptionDecorator<MinerToPoolTransfer>(messageManager,
+                        new MinerToPoolTransfer(messageManager, statisticsManager));
+                })
+                .AddTransient<IProxy>(provider =>
+                {
+                    var messageManager = provider.GetService<IMessageManager>();
+                    var proxyListener = provider.GetService<IProxyListener>();
+                    return new ProxyCriticalExceptionDecorator(messageManager,
+                        new Proxy.Proxy(proxyListener, messageManager));
+                })
                 .BuildServiceProvider();
 
             return serviceCollection.GetService<IProxy>();

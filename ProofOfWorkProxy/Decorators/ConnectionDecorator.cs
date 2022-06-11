@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net.Sockets;
 using ProofOfWorkProxy.Connections;
+using ProofOfWorkProxy.Exceptions;
 using ProofOfWorkProxy.Extensions;
 using ProofOfWorkProxy.Managers;
 using ProofOfWorkProxy.Models;
@@ -8,7 +10,7 @@ namespace ProofOfWorkProxy.Decorators
 {
     public class ConnectionDecorator : IConnection
     {
-        private readonly IConnection wrappedConnection;
+        private IConnection wrappedConnection;
         private readonly IMessageManager messageManager;
         private readonly IStatisticsManager statisticsManager;
 
@@ -29,7 +31,17 @@ namespace ProofOfWorkProxy.Decorators
 
         public IConnection Initialize()
         {
-            return wrappedConnection.Initialize();
+            try
+            {
+                wrappedConnection =  wrappedConnection.Initialize();
+                return this;
+
+            }
+            catch (SocketException)
+            {
+                Dispose();
+                throw new ConnectionToPoolFailedException();
+            }
         }
 
         public void CheckIfConnectionIsAlive()

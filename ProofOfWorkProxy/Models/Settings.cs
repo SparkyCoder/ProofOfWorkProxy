@@ -15,6 +15,8 @@ namespace ProofOfWorkProxy.Models
         public static int MiningPoolPort => ConfigurationManager.AppSettings[MiningPoolPortKey].ToInteger();
         public static bool DebugOn => ConfigurationManager.AppSettings[DebugOnKey].ToBool();
 
+        public static string GitHubIssuesUrl => "https://github.com/SparkyCoder/ProofOfWorkProxy/issues";
+
         public static string ApplicationTitle = @"
  ______   ______     __     __        ______   ______     ______     __  __     __  __    
 /\  == \ /\  __ \   /\ \  _ \ \      /\  == \ /\  == \   /\  __ \   /\_\_\_\   /\ \_\ \   

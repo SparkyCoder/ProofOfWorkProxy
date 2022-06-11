@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using ProofOfWorkProxy.Connections;
-using ProofOfWorkProxy.Extensions;
 using ProofOfWorkProxy.Managers;
 using ProofOfWorkProxy.Models;
 

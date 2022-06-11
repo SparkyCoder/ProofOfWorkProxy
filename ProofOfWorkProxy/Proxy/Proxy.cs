@@ -1,9 +1,6 @@
-﻿using System;
-using System.Threading;
-using ProofOfWorkProxy.Connections;
+﻿using System.Threading;
 using ProofOfWorkProxy.Connections.Listener;
 using ProofOfWorkProxy.Managers;
-using ProofOfWorkProxy.Models;
 
 namespace ProofOfWorkProxy.Proxy
 {

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
+using ProofOfWorkProxy.Exceptions;
 using ProofOfWorkProxy.Models;
 
 namespace ProofOfWorkProxy.Managers
@@ -9,6 +11,7 @@ namespace ProofOfWorkProxy.Managers
     {
         private readonly IStatisticsManager statisticsManager;
         private readonly ConcurrentQueue<ConsoleMessage> messageQueue;
+        private Timer messageTimer;
 
         public MessageManager(IStatisticsManager statisticsManager)
         {
@@ -23,7 +26,7 @@ namespace ProofOfWorkProxy.Managers
 
         public void StartTimerDisplayMessagesFromQueue()
         {
-            new Timer(state => { Display(); }, null, 0, 1000);
+            messageTimer = new Timer(state => { Display(); }, null, 0, 1000);
         }
 
         private void Display()
@@ -34,10 +37,15 @@ namespace ProofOfWorkProxy.Managers
             }
             else
             {
-                Console.Clear();
-                new ConsoleMessage(Settings.ApplicationTitle).DisplayMessage();
+                ShowTitleOnClearedScreen();
                 DisplayStatistics();
             }
+        }
+
+        private static void ShowTitleOnClearedScreen()
+        {
+            Console.Clear();
+            new ConsoleMessage(Settings.ApplicationTitle).DisplayMessage();
         }
 
         private void IterateThroughQueuedDebugMessages()
@@ -67,9 +75,23 @@ namespace ProofOfWorkProxy.Managers
         {
             messageQueue.TryDequeue(out var message);
 
-            message ??= new ConsoleMessage("Could not access pending message queue.", ConsoleColor.Red);
-
+            if (message == null)
+                DisplayCriticalError(new CouldNotTakeActionOnCollectionException("TryDequeue", "Message").Message);
+            
             message.DisplayMessage();
+        }
+
+        public void DisplayCriticalError(string criticalMessage)
+        {
+            messageTimer.Dispose();
+
+                Task.Delay(500)
+                    .ContinueWith(_ =>
+                    {
+                        ShowTitleOnClearedScreen();
+                        new ConsoleMessage(criticalMessage, ConsoleColor.Red).DisplayMessage();
+                        Console.ReadKey();
+                    }).Wait();
         }
     }
 }
