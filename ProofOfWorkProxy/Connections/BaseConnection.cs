@@ -47,10 +47,10 @@ namespace ProofOfWorkProxy.Connections
 
         public void Dispose()
         {
-            streamReader.Dispose();
-            streamWriter.Dispose();
-            networkStream.Dispose();
-            client.Dispose();
+            streamReader?.Dispose();
+            streamWriter?.Dispose();
+            networkStream?.Dispose();
+            client?.Dispose();
         }
     }
 }

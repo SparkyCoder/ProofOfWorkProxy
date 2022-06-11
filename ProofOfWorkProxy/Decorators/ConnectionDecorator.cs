@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net.Sockets;
 using ProofOfWorkProxy.Connections;
+using ProofOfWorkProxy.Exceptions;
 using ProofOfWorkProxy.Extensions;
 using ProofOfWorkProxy.Managers;
 using ProofOfWorkProxy.Models;
@@ -8,8 +10,9 @@ namespace ProofOfWorkProxy.Decorators
 {
     public class ConnectionDecorator : IConnection
     {
-        private readonly IConnection wrappedConnection;
+        private IConnection wrappedConnection;
         private readonly IMessageManager messageManager;
+        private readonly IStatisticsManager statisticsManager;
 
         public bool IsTerminated
         {
@@ -19,15 +22,26 @@ namespace ProofOfWorkProxy.Decorators
 
         public string Id => wrappedConnection.Id;
 
-        public ConnectionDecorator(IConnection wrappedConnection, IMessageManager messageManager)
+        public ConnectionDecorator(IConnection wrappedConnection, IMessageManager messageManager, IStatisticsManager statisticsManager)
         {
             this.wrappedConnection = wrappedConnection;
             this.messageManager = messageManager;
+            this.statisticsManager = statisticsManager;
         }
 
         public IConnection Initialize()
         {
-            return wrappedConnection.Initialize();
+            try
+            {
+                wrappedConnection =  wrappedConnection.Initialize();
+                return this;
+
+            }
+            catch (SocketException)
+            {
+                Dispose();
+                throw new ConnectionToPoolFailedException();
+            }
         }
 
         public void CheckIfConnectionIsAlive()
@@ -71,9 +85,14 @@ namespace ProofOfWorkProxy.Decorators
         {
             if(wrappedConnection.IsTerminated) return;
 
-            var className = wrappedConnection.GetType().ToString().GetClassName();
-            var terminatedMessage = new ConsoleMessage($"{className} {Id} Terminated!", ConsoleColor.Red);
-            messageManager.AddMessage(terminatedMessage);
+            if (Settings.DebugOn)
+            {
+                var className = wrappedConnection.GetType().ToString().GetClassName();
+                var terminatedMessage = new ConsoleMessage($"{className} {Id} Terminated!", ConsoleColor.Red);
+                messageManager.AddMessage(terminatedMessage);
+            }
+
+            statisticsManager.RemoveMinerStatistics(Id);
 
             wrappedConnection.IsTerminated = true;
             IsTerminated = true;

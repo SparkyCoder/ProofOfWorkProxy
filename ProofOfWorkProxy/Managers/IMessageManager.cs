@@ -7,5 +7,6 @@ namespace ProofOfWorkProxy.Managers
     {
         public void AddMessage(ConsoleMessage message);
         public void StartTimerDisplayMessagesFromQueue();
+        void DisplayCriticalError(string criticalMessage);
     }
 }
