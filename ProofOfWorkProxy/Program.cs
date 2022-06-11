@@ -1,4 +1,5 @@
-﻿using ProofOfWorkProxy.Startup;
+﻿using System;
+using ProofOfWorkProxy.Startup;
 
 namespace ProofOfWorkProxy
 {
@@ -6,7 +7,10 @@ namespace ProofOfWorkProxy
     {
         public static void Main()
         {
+            Console.CursorVisible = false;
+
             var proxy = ApplicationStart.InitializeProxy();
+
             proxy.Start();
         }
     }
