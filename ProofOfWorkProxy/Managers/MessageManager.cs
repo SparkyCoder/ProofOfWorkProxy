@@ -90,7 +90,6 @@ namespace ProofOfWorkProxy.Managers
                     {
                         ShowTitleOnClearedScreen();
                         new ConsoleMessage(criticalMessage, ConsoleColor.Red).DisplayMessage();
-                        Console.ReadKey();
                     }).Wait();
         }
     }

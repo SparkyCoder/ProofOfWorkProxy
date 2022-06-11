@@ -15,6 +15,9 @@ namespace ProofOfWorkProxy.Connections.Listener
         private readonly IDataTransfer<PoolToMinerTransfer> poolToMinerTransfer;
         private readonly IMessageManager messageManager;
         private readonly IStatisticsManager statisticsManager;
+        private TcpListener proxyListener;
+        private IConnection minerConnection;
+        private IConnection poolConnection;
 
         public ProxyListener(IDataTransfer<MinerToPoolTransfer> minerToPoolTransfer, IDataTransfer<PoolToMinerTransfer> poolToMinerTransfer, IMessageManager messageManager, IStatisticsManager statisticsManager)
         {
@@ -26,11 +29,11 @@ namespace ProofOfWorkProxy.Connections.Listener
 
         public void Listen()
         {
-            var proxyListener = CreateProxyListener();
+            proxyListener = CreateProxyListener();
 
-            StartListeningForNewConnections(proxyListener);
+            StartListeningForNewConnections();
 
-            HandleNewConnections(proxyListener);
+            HandleNewConnections();
         }
 
         private static TcpListener CreateProxyListener()
@@ -41,38 +44,54 @@ namespace ProofOfWorkProxy.Connections.Listener
             return new TcpListener(localIp, localPort);
         }
 
-        private static void StartListeningForNewConnections(TcpListener proxyListener)
+        private void StartListeningForNewConnections()
         {
             proxyListener.Start();
         }
 
-        private void HandleNewConnections(TcpListener proxyListener)
+        private void HandleNewConnections()
         {
             while (!Environment.HasShutdownStarted)
             {
                 if (Settings.DebugOn)
-                {
-                    var waitingForConnectionsMessage =
-                        new ConsoleMessage($"Waiting for new mining connections on {proxyListener.LocalEndpoint}...");
-                    messageManager.AddMessage(waitingForConnectionsMessage);
-                }
+                    WriteWaitingForConnectionDebugLog();
 
                 var minerClient = proxyListener.AcceptTcpClient();
 
-                var minerConnection = GetDecoratedConnection(new MinerConnection(minerClient));
-                var poolConnection = GetDecoratedConnection(new MinerPoolConnection());
+                SetConnections(minerClient);
 
                 if (Settings.DebugOn)
-                {
-                    var newMinerMessage = new ConsoleMessage($"Miner {minerConnection.Id} connected.");
-                    messageManager.AddMessage(newMinerMessage);
-                }
+                    WriteNewMinerConnectedForDebugLog();
 
                 statisticsManager.AddNewlyConnectedMiner(minerConnection.Id);
 
-                QueueWork(() => minerToPoolTransfer.SendData(minerConnection, poolConnection));
-                QueueWork(() => poolToMinerTransfer.SendData(minerConnection, poolConnection));
+                StartDataTransfersOnNewThreads();
             }
+        }
+
+        private void WriteWaitingForConnectionDebugLog()
+        {
+            var waitingForConnectionsMessage =
+                new ConsoleMessage($"Waiting for new mining connections on {proxyListener.LocalEndpoint}...");
+            messageManager.AddMessage(waitingForConnectionsMessage);
+        }
+
+        private void SetConnections(TcpClient minerClient)
+        {
+            minerConnection = GetDecoratedConnection(new MinerConnection(minerClient));
+            poolConnection = GetDecoratedConnection(new MinerPoolConnection());
+        }
+
+        private void WriteNewMinerConnectedForDebugLog()
+        {
+            var newMinerMessage = new ConsoleMessage($"Miner {minerConnection.Id} connected.");
+            messageManager.AddMessage(newMinerMessage);
+        }
+
+        private void StartDataTransfersOnNewThreads()
+        {
+            QueueWork(() => minerToPoolTransfer.SendData(minerConnection, poolConnection));
+            QueueWork(() => poolToMinerTransfer.SendData(minerConnection, poolConnection));
         }
 
         private IConnection GetDecoratedConnection(IConnection connection)
@@ -83,6 +102,13 @@ namespace ProofOfWorkProxy.Connections.Listener
         private static void QueueWork(Action onNewMinerConnected)
         {
             ThreadPool.QueueUserWorkItem(state => onNewMinerConnected());
+        }
+
+        public void Dispose()
+        {
+            minerConnection?.Dispose();
+            poolConnection?.Dispose();
+            proxyListener?.Stop();
         }
     }
 }
