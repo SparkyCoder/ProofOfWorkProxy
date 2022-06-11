@@ -1,18 +1,7 @@
 <div id="top"></div>
 
 
-
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Issues][issues-shield]][issues-url]
+[![Stargazers][stars-shield]][stars-url]
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
@@ -65,7 +54,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://github.com/SparkyCoder/ProofOfWorkProxy)
+[![PoW Proxy][product-screenshot]](https://github.com/SparkyCoder/ProofOfWorkProxy)
 
 The PoW Proxy is a practical way to monitor your miners. 
 
@@ -164,19 +153,10 @@ Project Link: [https://github.com/SparkyCoder/ProofOfWorkProxy](https://github.c
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/sparkycoder/ProofOfWorkProxy.svg?style=for-the-badge
-[contributors-url]: https://img.shields.io/github/contributors/sparkycoder/ProofOfWorkProxy/graphs/contributors
-[forks-shield]: https://img.shields.io/github/contributors/sparkycoder/ProofOfWorkProxy.svg?style=for-the-badge
-[forks-url]: https://img.shields.io/github/contributors/sparkycoder/ProofOfWorkProxy/network/members
-[stars-shield]: https://img.shields.io/github/contributors/sparkycoder/ProofOfWorkProxy.svg?style=for-the-badge
-[issues-shield]: https://img.shields.io/github/contributors/sparkycoder/ProofOfWorkProxy.svg?style=for-the-badge
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[license-shield]: https://img.shields.io/github/contributors/sparkycoder/ProofOfWorkProxy.svg?style=for-the-badge
-[license-url]: https://img.shields.io/github/contributors/sparkycoder/ProofOfWorkProxy/blob/master/LICENSE.txt
+[stars-shield]: https://img.shields.io/github/stars/SparkyCoder/ProofOfWorkProxy?style=for-the-badge
+[stars-url]: https://github.com/SparkyCoder/ProofOfWorkProxy/stargazers
+[license-shield]: https://img.shields.io/github/license/SparkyCoder/ProofOfWorkProxy?style=for-the-badge
+[license-url]: https://raw.githubusercontent.com/SparkyCoder/ProofOfWorkProxy/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]:https://www.linkedin.com/in/david-kobuszewski-60315428/
-[product-screenshot]: images/screenshot.png
+[product-screenshot]: https://raw.githubusercontent.com/SparkyCoder/ProofOfWorkProxy/main/Images/screenshot.png
