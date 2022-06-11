@@ -7,24 +7,15 @@ namespace ProofOfWorkProxy.Proxy
     public class Proxy : IProxy
     {
         private readonly IProxyListener proxyListener;
-        private readonly IMessageManager messageManager;
 
-        public Proxy(IProxyListener proxyListener, IMessageManager messageManager)
+        public Proxy(IProxyListener proxyListener)
         {
             this.proxyListener = proxyListener;
-            this.messageManager = messageManager;
         }
 
         public void Start()
         {
-            StartMessageListener();
-
             proxyListener.Listen();
-        }
-
-        private void StartMessageListener()
-        {
-            ThreadPool.QueueUserWorkItem(state => messageManager.StartTimerDisplayMessagesFromQueue());
         }
     }
 }

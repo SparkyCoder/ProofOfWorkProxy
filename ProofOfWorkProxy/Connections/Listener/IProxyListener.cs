@@ -2,7 +2,7 @@
 
 namespace ProofOfWorkProxy.Connections.Listener
 {
-    public interface IProxyListener
+    public interface IProxyListener : IDisposable
     {
         void Listen();
     }
