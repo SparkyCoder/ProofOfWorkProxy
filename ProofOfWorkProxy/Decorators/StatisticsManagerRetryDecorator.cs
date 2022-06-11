@@ -16,7 +16,7 @@ namespace ProofOfWorkProxy.Decorators
         public StatisticsManagerRetryDecorator(IStatisticsManager wrappedStatisticsManager)
         {
             retryPolicy = Policy.Handle<Exception>()
-                .Retry(1);
+                .WaitAndRetry(10, attempt => TimeSpan.FromSeconds(5 * attempt));
             this.wrappedStatisticsManager = wrappedStatisticsManager;
         }
 
