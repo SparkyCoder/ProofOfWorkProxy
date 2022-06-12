@@ -24,8 +24,20 @@ namespace ProofOfWorkProxy.Startup
                         new ProxyListener(minerToPool, poolToMiner, messageManager, statisticsManager));
                 })
                 .AddSingleton<IStatisticsManager>(provider => new StatisticsManagerRetryDecorator(new StatisticsManager()))
-                .AddTransient<IDataTransfer<PoolToMinerTransfer>, PoolToMinerTransfer>()
-                .AddTransient<IDataTransfer<MinerToPoolTransfer>, MinerToPoolTransfer>()
+                .AddTransient<IDataTransfer<PoolToMinerTransfer>>(provider =>
+                {
+                    var messageManager = provider.GetService<IMessageManager>();
+                    var statisticsManager = provider.GetService<IStatisticsManager>();
+                    var poolToMiner = new PoolToMinerTransfer(messageManager, statisticsManager);
+                    return new DataTransferDecorator<PoolToMinerTransfer>(poolToMiner, messageManager);
+                })
+                .AddTransient<IDataTransfer<MinerToPoolTransfer>>(provider =>
+                {
+                    var messageManager = provider.GetService<IMessageManager>();
+                    var statisticsManager = provider.GetService<IStatisticsManager>();
+                    var poolToMiner = new MinerToPoolTransfer(messageManager, statisticsManager);
+                    return new DataTransferDecorator<MinerToPoolTransfer>(poolToMiner, messageManager);
+                })
                 .AddTransient<IProxy, Proxy.Proxy>()
                 .BuildServiceProvider();
 

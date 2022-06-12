@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ProofOfWorkProxy.Connections;
+using ProofOfWorkProxy.Extensions;
 using ProofOfWorkProxy.Managers;
 using ProofOfWorkProxy.Models;
 
@@ -51,8 +52,19 @@ namespace ProofOfWorkProxy.DataTransfer
         {
             statisticsToUpdate.PoolRespondedToMiner();
 
-            if(jsonRpc.Error != null)
+            if(jsonRpc?.Error != null)
                 statisticsToUpdate.PoolRespondedWithAnError();
+
+            if (IsAcceptedResponse(jsonRpc))
+                statisticsToUpdate.ShareWasAccepted(jsonRpc?.Id);
+        }
+
+        private static bool IsAcceptedResponse(JsonRpcResult jsonRpc)
+        {
+            var resultType = jsonRpc?.Result?.GetType()?.ToString() as string;
+
+            return (resultType.IsBoolean() && jsonRpc?.Id != null && jsonRpc?.Result == true &&
+                    jsonRpc?.Error == null) ;
         }
     }
 }

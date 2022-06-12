@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using ProofOfWorkProxy.Models;
+﻿using ProofOfWorkProxy.Models;
 
 namespace ProofOfWorkProxy.Managers
 {

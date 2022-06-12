@@ -55,7 +55,7 @@ namespace ProofOfWorkProxy.DataTransfer
             var methodName = jsonRpc.Method as string;
 
             if (IsMethodAShareSubmittedRequest(methodName))
-                statisticsToUpdate.ShareWasSubmittedToPool();
+                statisticsToUpdate.ShareWasSubmittedToPool(jsonRpc.Id);
         }
 
         private static bool IsMethodAShareSubmittedRequest(string methodName)

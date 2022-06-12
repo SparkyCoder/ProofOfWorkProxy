@@ -12,6 +12,7 @@ namespace ProofOfWorkProxy.Managers
         private readonly IStatisticsManager statisticsManager;
         private readonly ConcurrentQueue<ConsoleMessage> messageQueue;
         private Timer messageTimer;
+        private readonly object lockObject = new object();
 
         public MessageManager(IStatisticsManager statisticsManager)
         {
@@ -21,12 +22,37 @@ namespace ProofOfWorkProxy.Managers
 
         public void AddMessage(ConsoleMessage message)
         {
-            messageQueue.Enqueue(message);
+            lock (lockObject)
+            {
+                messageQueue.Enqueue(message);
+            }
         }
 
         public void StartTimerDisplayMessagesFromQueue()
         {
-            messageTimer = new Timer(state => { Display(); }, null, 0, 1000);
+            lock (lockObject)
+            {
+                StartTimer();
+            }
+        }
+
+        private void StartTimer()
+        {
+            TimerCallback callback = (state) => { DisplayOrError(); };
+
+            messageTimer = new Timer(callback, null, 0, 1000);
+        }
+
+        private void DisplayOrError()
+        {
+            try
+            {
+                Display();
+            }
+            catch (Exception ex)
+            {
+                DisplayCriticalError(ex.Message);
+            }
         }
 
         private void Display()
@@ -66,7 +92,7 @@ namespace ProofOfWorkProxy.Managers
             foreach (var (minerId, minerStatistics) in statisticsManager.MinerStatistics)
             {
                 new ConsoleMessage(
-                        $"======================================================================================================== {Environment.NewLine}| Miner: {minerId} {Environment.NewLine}| Submitted Shares: {minerStatistics.SharesSubmitted} {Environment.NewLine}| Requests: {minerStatistics.Requests} {Environment.NewLine}| Responses: {minerStatistics.Responses} {Environment.NewLine}| Errors: {minerStatistics.Errors} {Environment.NewLine}| Last Updated: {minerStatistics.LastUpdated} {Environment.NewLine}========================================================================================================")
+                        $"======================================================================================================== {Environment.NewLine}| Miner: {minerId}   Connected: {minerStatistics.ConnectedDateTime}    Last Updated: {minerStatistics.LastUpdated} {Environment.NewLine}| Submitted Shares: {minerStatistics.SharesSubmitted.Count}   Shares Accepted: {minerStatistics.GetAcceptedShares()} {Environment.NewLine}| Requests: {minerStatistics.Requests}   Responses: {minerStatistics.Responses}   Errors: {minerStatistics.Errors} {Environment.NewLine}========================================================================================================")
                     .DisplayMessage();
             }
         }
@@ -77,13 +103,15 @@ namespace ProofOfWorkProxy.Managers
 
             if (message == null)
                 DisplayCriticalError(new CouldNotTakeActionOnCollectionException("TryDequeue", "Message").Message);
-            
-            message.DisplayMessage();
+
+            message?.DisplayMessage();
         }
 
         public void DisplayCriticalError(string criticalMessage)
         {
-            messageTimer.Dispose();
+            lock (lockObject)
+            {
+                messageTimer?.Dispose();
 
                 Task.Delay(500)
                     .ContinueWith(_ =>
@@ -91,6 +119,11 @@ namespace ProofOfWorkProxy.Managers
                         ShowTitleOnClearedScreen();
                         new ConsoleMessage(criticalMessage, ConsoleColor.Red).DisplayMessage();
                     }).Wait();
+
+                var delay = TimeSpan.FromSeconds(Settings.ErrorMessageDisplayTime);
+                Thread.Sleep(delay);
+                StartTimer();
+            }
         }
     }
 }

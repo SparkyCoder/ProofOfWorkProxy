@@ -1,4 +1,7 @@
-﻿namespace ProofOfWorkProxy.Models
+﻿using System;
+using System.Runtime.Remoting;
+
+namespace ProofOfWorkProxy.Models
 {
     public class JsonRpcResult
     {
@@ -7,5 +10,9 @@
         public dynamic Result { get; set; }
         public dynamic Error { get; set; }
 
+        public static explicit operator ObjectHandle(JsonRpcResult v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

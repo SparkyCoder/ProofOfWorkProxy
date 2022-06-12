@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Linq;
 using ProofOfWorkProxy.Exceptions;
 using ProofOfWorkProxy.Models;
@@ -12,7 +11,7 @@ namespace ProofOfWorkProxy.Managers
 
         public StatisticsManager()
         {
-            this.MinerStatistics = new ConcurrentDictionary<string, Statistics>();
+            MinerStatistics = new ConcurrentDictionary<string, Statistics>();
         }
 
         public void AddNewlyConnectedMiner(string minerId)
@@ -60,7 +59,6 @@ namespace ProofOfWorkProxy.Managers
         private bool DoesStatisticExist(string minerId)
         {
             return MinerStatistics.Any(statistics => statistics.Key == minerId);
-            ;
         }
     }
 }

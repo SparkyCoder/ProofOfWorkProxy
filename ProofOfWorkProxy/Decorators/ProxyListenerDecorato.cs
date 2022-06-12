@@ -44,8 +44,6 @@ namespace ProofOfWorkProxy.Decorators
 
         private void StartListening()
         {
-            StartMessageListener();
-
             wrappedProxyListener.Listen();
         }
 
@@ -55,16 +53,11 @@ namespace ProofOfWorkProxy.Decorators
 
             var criticalMessage = exception.Message;
 
-            criticalMessage += $"{Environment.NewLine} {Environment.NewLine} Retry attempt: {attemptNumber}.";
+            criticalMessage += $"{Environment.NewLine} {Environment.NewLine}Retry attempt: {attemptNumber}.";
 
             messageManager.DisplayCriticalError(criticalMessage);
 
             throw exception;
-        }
-
-        private void StartMessageListener()
-        {
-            ThreadPool.QueueUserWorkItem(state => messageManager.StartTimerDisplayMessagesFromQueue());
         }
 
         public void Dispose()
