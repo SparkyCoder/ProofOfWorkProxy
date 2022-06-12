@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Runtime.Remoting;
 
 namespace ProofOfWorkProxy.Models
 {
     public class Statistics
     {
-        public ConcurrentBag<SubmittedShare> SharesSubmitted { get; private set; }
+        public ConcurrentBag<SubmittedShare> SharesSubmitted { get; }
         public long Requests { get; private set; }
         public long Responses { get; private set; }
         public long Errors { get; private set; }
-        public DateTime ConnectedDateTime { get; private set; }
+        public DateTime ConnectedDateTime { get; }
         public DateTime LastUpdated { get; private set; }
 
         public Statistics()

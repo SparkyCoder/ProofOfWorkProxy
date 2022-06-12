@@ -71,7 +71,7 @@ namespace ProofOfWorkProxy.Managers
         private static void ShowTitleOnClearedScreen()
         {
             Console.Clear();
-            new ConsoleMessage(Settings.ApplicationTitle).DisplayMessage();
+            new ConsoleMessage(Settings.ApplicationTitle).DisplayMessage(addNewLine:false);
         }
 
         private void IterateThroughQueuedDebugMessages()
@@ -84,17 +84,23 @@ namespace ProofOfWorkProxy.Managers
 
         private void DisplayStatistics()
         {
+            DisplayApplicationStats();
+
             if (statisticsManager.MinerStatistics.Count == 0)
-            {
                 new ConsoleMessage("Waiting for connections......").DisplayMessage();
-            }
 
             foreach (var (minerId, minerStatistics) in statisticsManager.MinerStatistics)
             {
                 new ConsoleMessage(
                         $"======================================================================================================== {Environment.NewLine}| Miner: {minerId}   Connected: {minerStatistics.ConnectedDateTime}    Last Updated: {minerStatistics.LastUpdated} {Environment.NewLine}| Submitted Shares: {minerStatistics.SharesSubmitted.Count}   Shares Accepted: {minerStatistics.GetAcceptedShares()} {Environment.NewLine}| Requests: {minerStatistics.Requests}   Responses: {minerStatistics.Responses}   Errors: {minerStatistics.Errors} {Environment.NewLine}========================================================================================================")
-                    .DisplayMessage();
+                    .DisplayMessage(addNewLine:false);
             }
+        }
+
+        private void DisplayApplicationStats()
+        {
+            new ConsoleMessage($"Critical Errors: {statisticsManager.TotalCriticalErrorCount}").DisplayMessage(addNewLine:false);
+            new ConsoleMessage($"Total Miner Disconnects: {statisticsManager.TotalMinerDisconnectCount}").DisplayMessage();
         }
 
         private void DisplayMessage()
@@ -111,6 +117,8 @@ namespace ProofOfWorkProxy.Managers
         {
             lock (lockObject)
             {
+                statisticsManager.AddToTotalCriticalErrorCount();
+
                 messageTimer?.Dispose();
 
                 Task.Delay(500)

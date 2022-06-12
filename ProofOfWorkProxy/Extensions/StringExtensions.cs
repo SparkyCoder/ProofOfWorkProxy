@@ -29,10 +29,11 @@ namespace ProofOfWorkProxy.Extensions
             return valueType == typeof(bool).ToString();
         }
 
-        public static void Display(this string message, ConsoleColor color)
+        public static void Display(this string message, ConsoleColor color, bool displayWithNewline = true)
         {
             Console.ForegroundColor = color;
-            Console.WriteLine(message + Environment.NewLine);
+            var addedText = displayWithNewline ? Environment.NewLine : string.Empty;
+            Console.WriteLine($"{message} {addedText}");
         }
 
         public static string GetClassName(this string type)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
 using ProofOfWorkProxy.Exceptions;
 using ProofOfWorkProxy.Models;
 
@@ -8,6 +9,8 @@ namespace ProofOfWorkProxy.Managers
     public class StatisticsManager : IStatisticsManager
     {
         public ConcurrentDictionary<string, Statistics> MinerStatistics { get; }
+        public long TotalCriticalErrorCount { get; private set; }
+        public long TotalMinerDisconnectCount { get; private set; }
 
         public StatisticsManager()
         {
@@ -59,6 +62,22 @@ namespace ProofOfWorkProxy.Managers
         private bool DoesStatisticExist(string minerId)
         {
             return MinerStatistics.Any(statistics => statistics.Key == minerId);
+        }
+
+        public void AddToTotalCriticalErrorCount()
+        {
+            var totalCriticalErrorCount = TotalCriticalErrorCount;
+            Interlocked.Add(ref totalCriticalErrorCount, 1);
+
+            TotalCriticalErrorCount = totalCriticalErrorCount;
+        }
+
+        public void AddToTotalDisconnectCount()
+        {
+            var totalMinerDisconnectCount = TotalMinerDisconnectCount;
+            Interlocked.Add(ref totalMinerDisconnectCount, 1);
+
+            TotalMinerDisconnectCount = totalMinerDisconnectCount;
         }
     }
 }

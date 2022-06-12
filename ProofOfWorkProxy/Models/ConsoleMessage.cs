@@ -15,9 +15,9 @@ namespace ProofOfWorkProxy.Models
             this.message = message;
         }
 
-        public void DisplayMessage()
+        public void DisplayMessage(bool addNewLine = true)
         {
-            message.Display(color);
+            message.Display(color, addNewLine);
         }
     }
 }

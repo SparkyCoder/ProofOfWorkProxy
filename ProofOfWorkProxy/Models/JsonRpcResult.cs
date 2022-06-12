@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Remoting;
+using ProofOfWorkProxy.Extensions;
 
 namespace ProofOfWorkProxy.Models
 {
@@ -13,6 +14,14 @@ namespace ProofOfWorkProxy.Models
         public static explicit operator ObjectHandle(JsonRpcResult v)
         {
             throw new NotImplementedException();
+        }
+
+        public bool IsAcceptedResponse(JsonRpcResult jsonRpc)
+        {
+            var resultType = jsonRpc?.Result?.GetType()?.ToString() as string;
+
+            return (resultType.IsBoolean() && jsonRpc?.Id != null && jsonRpc?.Result == true &&
+                    jsonRpc?.Error == null);
         }
     }
 }

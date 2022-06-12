@@ -11,6 +11,8 @@ namespace ProofOfWorkProxy.Decorators
     {
         private readonly IStatisticsManager wrappedStatisticsManager;
         private readonly RetryPolicy retryPolicy;
+        public long TotalCriticalErrorCount => wrappedStatisticsManager.TotalCriticalErrorCount;
+        public long TotalMinerDisconnectCount => wrappedStatisticsManager.TotalMinerDisconnectCount;
         public ConcurrentDictionary<string, Statistics> MinerStatistics => wrappedStatisticsManager.MinerStatistics;
 
         public StatisticsManagerRetryDecorator(IStatisticsManager wrappedStatisticsManager)
@@ -39,6 +41,16 @@ namespace ProofOfWorkProxy.Decorators
         public void RemoveMinerStatistics(string minerId)
         {
             retryPolicy.Execute(() => { wrappedStatisticsManager.RemoveMinerStatistics(minerId); });
+        }
+
+        public void AddToTotalCriticalErrorCount()
+        {
+            wrappedStatisticsManager.AddToTotalCriticalErrorCount();
+        }
+
+        public void AddToTotalDisconnectCount()
+        {
+            wrappedStatisticsManager.AddToTotalDisconnectCount();
         }
     }
 }

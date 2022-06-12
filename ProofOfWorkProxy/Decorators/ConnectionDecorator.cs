@@ -93,6 +93,7 @@ namespace ProofOfWorkProxy.Decorators
             }
 
             statisticsManager.RemoveMinerStatistics(Id);
+            statisticsManager.AddToTotalDisconnectCount();
 
             wrappedConnection.IsTerminated = true;
             IsTerminated = true;
