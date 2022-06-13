@@ -12,7 +12,7 @@ namespace ProofOfWorkProxy.Decorators
         private readonly IStatisticsManager wrappedStatisticsManager;
         private readonly RetryPolicy retryPolicy;
         public long TotalCriticalErrorCount => wrappedStatisticsManager.TotalCriticalErrorCount;
-        public long TotalMinerDisconnectCount => wrappedStatisticsManager.TotalMinerDisconnectCount;
+        public long TotalDisconnectCount => wrappedStatisticsManager.TotalDisconnectCount;
         public ConcurrentDictionary<string, Statistics> MinerStatistics => wrappedStatisticsManager.MinerStatistics;
 
         public StatisticsManagerRetryDecorator(IStatisticsManager wrappedStatisticsManager)

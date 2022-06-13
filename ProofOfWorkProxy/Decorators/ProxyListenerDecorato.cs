@@ -15,13 +15,14 @@ namespace ProofOfWorkProxy.Decorators
         private readonly IMessageManager messageManager;
         private readonly IProxyListener wrappedProxyListener;
 
-        public ProxyCriticalExceptionDecorator(IMessageManager messageManager, IProxyListener wrappedProxyListener)
+
+        public ProxyCriticalExceptionDecorator(IMessageManager messageManager, IProxyListener wrappedProxyListener, Settings settings)
         {
             retryPolicy = Policy.Handle<Exception>()
                 .WaitAndRetryForever(attempt =>
                 {
                     attemptNumber = attempt;
-                    return TimeSpan.FromSeconds(Settings.RetryDelayInSecondsForWhenInternetGoesDown);
+                    return TimeSpan.FromSeconds(settings.RetryDelayInSecondsForWhenInternetGoesDown);
                 });
             this.messageManager = messageManager;
             this.wrappedProxyListener = wrappedProxyListener;

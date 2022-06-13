@@ -9,7 +9,8 @@ namespace ProofOfWorkProxy.DataTransfer
     public class MinerToPoolTransfer : DataTransferBase<MinerToPoolTransfer>
     {
         private readonly IStatisticsManager statisticsManager;
-        public MinerToPoolTransfer(IMessageManager messageManager, IStatisticsManager statisticsManager) : base(messageManager)
+
+        public MinerToPoolTransfer(IMessageManager messageManager, IStatisticsManager statisticsManager, Settings settings) : base(messageManager, settings)
         {
             this.statisticsManager = statisticsManager;
         }

@@ -8,15 +8,17 @@ namespace ProofOfWorkProxy.DataTransfer
     public abstract class DataTransferBase<T> : IDataTransfer<T>
     {
         private readonly IMessageManager messageManager;
+        private readonly Settings settings;
 
-        protected DataTransferBase(IMessageManager messageManager)
+        protected DataTransferBase(IMessageManager messageManager, Settings settings)
         {
             this.messageManager = messageManager;
+            this.settings = settings;
         }
 
         protected void DisplayTransfer(string sentData, string minerId, string direction)
         {
-            if (!Settings.DebugOn) return;
+            if (!settings.Proxy.DebugOn) return;
 
             var dataTransferMessage = new ConsoleMessage($"{minerId} {direction}", ConsoleColor.Green);
             messageManager.AddMessage(dataTransferMessage);

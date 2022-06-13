@@ -6,7 +6,7 @@ namespace ProofOfWorkProxy.Managers
     public interface IStatisticsManager
     {
         long TotalCriticalErrorCount { get; }
-        long TotalMinerDisconnectCount { get; }
+        long TotalDisconnectCount { get; }
         ConcurrentDictionary<string, Statistics> MinerStatistics { get; }
         void AddNewlyConnectedMiner(string minerId);
         Statistics GetCurrentStatistics(string minerId);

@@ -8,12 +8,14 @@ namespace ProofOfWorkProxy.Managers
 {
     public class StatisticsManager : IStatisticsManager
     {
+        private readonly Settings settings;
         public ConcurrentDictionary<string, Statistics> MinerStatistics { get; }
         public long TotalCriticalErrorCount { get; private set; }
-        public long TotalMinerDisconnectCount { get; private set; }
+        public long TotalDisconnectCount { get; private set; }
 
-        public StatisticsManager()
+        public StatisticsManager(Settings settings)
         {
+            this.settings = settings;
             MinerStatistics = new ConcurrentDictionary<string, Statistics>();
         }
 
@@ -22,7 +24,7 @@ namespace ProofOfWorkProxy.Managers
             var addSucceeded = MinerStatistics.TryAdd(minerId, new Statistics());
 
             if (!addSucceeded)
-                throw new CouldNotTakeActionOnCollectionException("TryAdd", "Statistics");
+                throw new CouldNotTakeActionOnCollectionException("TryAdd", "Statistics", settings);
         }
 
         public Statistics GetCurrentStatistics(string minerId)
@@ -32,7 +34,7 @@ namespace ProofOfWorkProxy.Managers
             var getSucceeded = MinerStatistics.TryGetValue(minerId, out var existingStatistics);
 
             if (!getSucceeded)
-                throw new CouldNotTakeActionOnCollectionException("TryGetValue", "Statistics");
+                throw new CouldNotTakeActionOnCollectionException("TryGetValue", "Statistics", settings);
 
             return existingStatistics;
         }
@@ -46,7 +48,7 @@ namespace ProofOfWorkProxy.Managers
             var updateSucceeded = MinerStatistics.TryUpdate(minerId, updateStatistics, currentStatistics);
 
             if (!updateSucceeded)
-                throw new CouldNotTakeActionOnCollectionException("TryUpdate", "Statistics");
+                throw new CouldNotTakeActionOnCollectionException("TryUpdate", "Statistics", settings);
         }
 
         public void RemoveMinerStatistics(string minerId)
@@ -56,7 +58,7 @@ namespace ProofOfWorkProxy.Managers
             var removalSucceeded = MinerStatistics.TryRemove(minerId, out _);
 
             if (!removalSucceeded)
-                throw new CouldNotTakeActionOnCollectionException("TryRemove", $"{minerId} Statistics");
+                throw new CouldNotTakeActionOnCollectionException("TryRemove", $"{minerId} Statistics", settings);
         }
 
         private bool DoesStatisticExist(string minerId)
@@ -74,10 +76,10 @@ namespace ProofOfWorkProxy.Managers
 
         public void AddToTotalDisconnectCount()
         {
-            var totalMinerDisconnectCount = TotalMinerDisconnectCount;
+            var totalMinerDisconnectCount = TotalDisconnectCount;
             Interlocked.Add(ref totalMinerDisconnectCount, 1);
 
-            TotalMinerDisconnectCount = totalMinerDisconnectCount;
+            TotalDisconnectCount = totalMinerDisconnectCount;
         }
     }
 }

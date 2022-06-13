@@ -193,6 +193,10 @@ Now you'll start see raw Json-RPC messages flow through.
 <b>Reason</b>: It's possible you held the scroll bar or put focus on the console display with your cursor. <br/>
 <b>Fix</b>: Click on the PoW Proxy console application and hit `Enter` on your keyboard. Messages should continue. 
 
+<b>Issue</b>: Windows Defender says this is an unrecognized application. <br/>
+<b>Reason</b>: This code has not been digitally signed. Therfore Windows sees this app as an unknown publisher. Digitally signing code is expensive, especially for individual developers. If this application has enough interest I will purchase one and this message will go away.<br/>
+<b>Fix</b>: Click on `More Info` and then click `Run Anyway`. You can be sure the code is safe as all of it can be seen/reviewed in this GitHub repository. 
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- ROADMAP -->
@@ -200,7 +204,9 @@ Now you'll start see raw Json-RPC messages flow through.
 
 - [x] Add multi-threaded TCP Socket connections
 - [x] Support debug mode and statistics overview mode
-- [ ] Add notifications for disconnected miners
+- [ ] Start supporting plugins and thresholds
+- [ ] Add SNS Plugin
+- [ ] Add SQS Plugin
 - [ ] Add additional statistics (verified shares, error details, etc...)
 - [ ] Support SSL connections
 

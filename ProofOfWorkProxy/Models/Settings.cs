@@ -1,24 +1,15 @@
-﻿using System.Configuration;
-using ProofOfWorkProxy.Extensions;
-
-namespace ProofOfWorkProxy.Models
+﻿namespace ProofOfWorkProxy.Models
 {
-    public static class Settings
+    public class Settings
     {
-        private const string DebugOnKey = "DebugOn";
-        private const string ProxyPortKey = "ProxyPort";
-        private const string MiningPoolDomainKey = "MiningPoolDomain";
-        private const string MiningPoolPortKey = "MiningPoolPort";
+        public Proxy Proxy { get; set; }
+        public MiningPool MiningPool { get; set; }
+        public Plugins Plugins { get; set; }
+        public int RetryDelayInSecondsForWhenInternetGoesDown => 10;
+        public int ErrorMessageDisplayTime => 9;
+        public string GitHubIssuesUrl => "https://github.com/SparkyCoder/ProofOfWorkProxy/issues";
 
-        public static int ProxyListeningPort => ConfigurationManager.AppSettings[ProxyPortKey].ToInteger();
-        public static string MiningPoolDomain => ConfigurationManager.AppSettings[MiningPoolDomainKey];
-        public static int MiningPoolPort => ConfigurationManager.AppSettings[MiningPoolPortKey].ToInteger();
-        public static bool DebugOn => ConfigurationManager.AppSettings[DebugOnKey].ToBool();
-        public static int RetryDelayInSecondsForWhenInternetGoesDown => 10;
-        public static int ErrorMessageDisplayTime => 9;
-        public static string GitHubIssuesUrl => "https://github.com/SparkyCoder/ProofOfWorkProxy/issues";
-
-        public static string ApplicationTitle = @"
+        public string ApplicationTitle = @"
  ______   ______     __     __        ______   ______     ______     __  __     __  __    
 /\  == \ /\  __ \   /\ \  _ \ \      /\  == \ /\  == \   /\  __ \   /\_\_\_\   /\ \_\ \   
 \ \  _-/ \ \ \/\ \  \ \ \/ "".\ \     \ \  _-/ \ \  __<   \ \ \/\ \  \/_/\_\/_  \ \____ \  

@@ -10,13 +10,15 @@ namespace ProofOfWorkProxy.Managers
     public class MessageManager : IMessageManager
     {
         private readonly IStatisticsManager statisticsManager;
+        private readonly Settings settings;
         private readonly ConcurrentQueue<ConsoleMessage> messageQueue;
         private Timer messageTimer;
         private readonly object lockObject = new object();
 
-        public MessageManager(IStatisticsManager statisticsManager)
+        public MessageManager(IStatisticsManager statisticsManager, Settings settings)
         {
             this.statisticsManager = statisticsManager;
+            this.settings = settings;
             messageQueue = new ConcurrentQueue<ConsoleMessage>();
         }
 
@@ -57,7 +59,7 @@ namespace ProofOfWorkProxy.Managers
 
         private void Display()
         {
-            if (Settings.DebugOn)
+            if (settings.Proxy.DebugOn)
             {
                 IterateThroughQueuedDebugMessages();
             }
@@ -68,10 +70,10 @@ namespace ProofOfWorkProxy.Managers
             }
         }
 
-        private static void ShowTitleOnClearedScreen()
+        private void ShowTitleOnClearedScreen()
         {
             Console.Clear();
-            new ConsoleMessage(Settings.ApplicationTitle).DisplayMessage(addNewLine:false);
+            new ConsoleMessage(settings.ApplicationTitle).DisplayMessage(addNewLine:false);
         }
 
         private void IterateThroughQueuedDebugMessages()
@@ -100,7 +102,7 @@ namespace ProofOfWorkProxy.Managers
         private void DisplayApplicationStats()
         {
             new ConsoleMessage($"Critical Errors: {statisticsManager.TotalCriticalErrorCount}").DisplayMessage(addNewLine:false);
-            new ConsoleMessage($"Total Miner Disconnects: {statisticsManager.TotalMinerDisconnectCount}").DisplayMessage();
+            new ConsoleMessage($"Total Disconnects: {statisticsManager.TotalDisconnectCount}").DisplayMessage();
         }
 
         private void DisplayMessage()
@@ -108,7 +110,7 @@ namespace ProofOfWorkProxy.Managers
             messageQueue.TryDequeue(out var message);
 
             if (message == null)
-                DisplayCriticalError(new CouldNotTakeActionOnCollectionException("TryDequeue", "Message").Message);
+                DisplayCriticalError(new CouldNotTakeActionOnCollectionException("TryDequeue", "Message", settings).Message);
 
             message?.DisplayMessage();
         }
@@ -128,7 +130,7 @@ namespace ProofOfWorkProxy.Managers
                         new ConsoleMessage(criticalMessage, ConsoleColor.Red).DisplayMessage();
                     }).Wait();
 
-                var delay = TimeSpan.FromSeconds(Settings.ErrorMessageDisplayTime);
+                var delay = TimeSpan.FromSeconds(settings.ErrorMessageDisplayTime);
                 Thread.Sleep(delay);
                 StartTimer();
             }

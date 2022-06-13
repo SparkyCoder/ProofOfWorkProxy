@@ -13,6 +13,7 @@ namespace ProofOfWorkProxy.Decorators
         private IConnection wrappedConnection;
         private readonly IMessageManager messageManager;
         private readonly IStatisticsManager statisticsManager;
+        private readonly Settings settings;
 
         public bool IsTerminated
         {
@@ -22,11 +23,12 @@ namespace ProofOfWorkProxy.Decorators
 
         public string Id => wrappedConnection.Id;
 
-        public ConnectionDecorator(IConnection wrappedConnection, IMessageManager messageManager, IStatisticsManager statisticsManager)
+        public ConnectionDecorator(IConnection wrappedConnection, IMessageManager messageManager, IStatisticsManager statisticsManager, Settings settings)
         {
             this.wrappedConnection = wrappedConnection;
             this.messageManager = messageManager;
             this.statisticsManager = statisticsManager;
+            this.settings = settings;
         }
 
         public IConnection Initialize()
@@ -85,7 +87,7 @@ namespace ProofOfWorkProxy.Decorators
         {
             if(wrappedConnection.IsTerminated) return;
 
-            if (Settings.DebugOn)
+            if (settings.Proxy.DebugOn)
             {
                 var className = wrappedConnection.GetType().ToString().GetClassName();
                 var terminatedMessage = new ConsoleMessage($"{className} {Id} Terminated!", ConsoleColor.Red);

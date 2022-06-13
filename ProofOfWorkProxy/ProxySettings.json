@@ -1,0 +1,10 @@
+{
+  "Proxy": {
+    "Port": 6673,
+    "DebugOn": false
+  },
+  "MiningPool": {
+    "Domain": "prohashing.com",
+    "Port": 3339
+  }
+}
